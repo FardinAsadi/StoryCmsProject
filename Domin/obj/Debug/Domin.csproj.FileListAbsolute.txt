@@ -1,0 +1,4 @@
+F:\StoryCmsProject\Domin\bin\Debug\Domin.dll
+F:\StoryCmsProject\Domin\bin\Debug\Domin.pdb
+F:\StoryCmsProject\Domin\obj\Debug\Domin.dll
+F:\StoryCmsProject\Domin\obj\Debug\Domin.pdb

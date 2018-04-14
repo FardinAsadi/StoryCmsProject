@@ -1,0 +1,15 @@
+F:\StoryCmsProject\Infrastructure\bin\Debug\Infrastructure.dll
+F:\StoryCmsProject\Infrastructure\bin\Debug\Infrastructure.pdb
+F:\StoryCmsProject\Infrastructure\obj\Debug\Infrastructure.csprojResolveAssemblyReference.cache
+F:\StoryCmsProject\Infrastructure\obj\Debug\Infrastructure.dll
+F:\StoryCmsProject\Infrastructure\obj\Debug\Infrastructure.pdb
+F:\StoryCmsProject\Infrastructure\bin\Debug\Infrastructure.dll.config
+F:\StoryCmsProject\Infrastructure\bin\Debug\EntityFramework.dll
+F:\StoryCmsProject\Infrastructure\bin\Debug\EntityFramework.SqlServer.dll
+F:\StoryCmsProject\Infrastructure\bin\Debug\Domin.dll
+F:\StoryCmsProject\Infrastructure\bin\Debug\EntityFramework.xml
+F:\StoryCmsProject\Infrastructure\bin\Debug\EntityFramework.SqlServer.xml
+F:\StoryCmsProject\Infrastructure\bin\Debug\Domin.pdb
+F:\StoryCmsProject\Infrastructure\obj\Debug\Infrastructure.Migrations._1.resources
+F:\StoryCmsProject\Infrastructure\obj\Debug\Infrastructure.csproj.GenerateResource.Cache
+F:\StoryCmsProject\Infrastructure\obj\Debug\Infrastructure.Migrations._2.resources

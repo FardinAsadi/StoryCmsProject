@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @*<link href="/Content/bootstrap-rtl.css" rel="stylesheet">
+    <link href="/Content/site.css" rel="stylesheet">*@
+    @*<link href="/Content/Menu.css" rel="stylesheet">*@
+    <script src="/Scripts/modernizr-2.6.2.js"></script>
+</head>
+<body>
+
+    <div class="wrapper">
+        @{
+            Html.RenderPartial("_MenuPartial");
+        }
+
+        <!-- Page Content -->
+        <div id="content" class="container row">
+            <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+                <i class="glyphicon glyphicon-align-left"></i>
+                Toggle Sidebar
+            </button>
+            <div class="body-content col-md-10">
+                @RenderBody()
+                <hr />
+                <footer>
+                    <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    <script src="~/Scripts/Menu/Menu.js"></script>
+    @RenderSection("scripts", required: false)
+    <link href="/Content/DataTables/cdnFiles/jquery.dataTables-rtl.css" rel="stylesheet" />
+    <script src="/Content/DataTables/cdnFiles/jquery.dataTables.js"></script>
+    <script src="/Content/jquery.validate.min.js"></script>
+    <script src="/Content/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

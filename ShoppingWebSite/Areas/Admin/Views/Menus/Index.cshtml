@@ -1,0 +1,127 @@
+﻿@model Domin.Models.Menu
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Menu</h2>
+
+<p>
+    <button type="button" class="btn  btn-success">افزودن آیتم جدید</button>
+</p>
+<div class="createParent">
+    <form method="post" data-controlername="Menus" data-actionname="Create">
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true)
+		@Html.HiddenFor(x => x.Id)
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Name)
+                @Html.ValidationMessageFor(model => model.Name)
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Link, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Link)
+                @Html.ValidationMessageFor(model => model.Link)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" onclick="formPost(this)" value="ایجاد" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+<div class="ListParent">
+    <table id="table_id" class="display"></table>
+</div>
+@section scripts{
+    <script>
+        var dataTable;
+        function formPost(elem) {
+            var form = $(elem).closest("form");
+            if (form.valid()) {
+                var postUrl = "/Admin/" + form.attr("data-controlerName") + "/" + form.attr("data-actionName");
+                $.ajax({
+                    type: "post",
+                    url: postUrl,
+                    data: form.serialize(),
+                    success: function(m) {
+                        form.attr("data-actionName", "Create");
+                        form.find("[type=button]").attr("value", "ایجاد");
+                        dataTable.ajax.reload();
+                    }
+                });
+            }
+        }
+    </script>
+    
+    <script type="text/javascript">
+        $(function() {
+            dataTable = $('#table_id')
+                .DataTable({
+                    serverSide: true,
+                    processing: true,
+                    scroll: true,
+                    scrollY: 200,
+                    deferRender: true,
+                    dom: "lfrtiS",
+                    ajax: {
+                        url: '@Url.Action("List")',
+                        type: "POST"
+                    },
+                    columns: [
+                        { data: "Row", title: "شماره" },
+						                        { data: "Name", title: "کد", sortable: true },
+						                        { data: "Link", title: "کد", sortable: true },
+						                        {
+                            data: "Id", title: "عملیات ها", mRender: function (data, type, row) {
+                                return "<a href='#' class='editItem' onclick='GetById(" + data + ")'>ویرایش</a>" + "&nbsp;" +
+                                    "<a href='#' class='editItem' onclick='DeleteById(" + data + ")'>حذف</a>";
+                            }
+                        }
+                    ]
+                });
+        });
+
+        function DeleteById(id) {
+            var r = confirm("Delete!");
+            if (r == true) {
+                $.ajax({
+                    type: "post",
+                    url: "Admin/"+ "@Url.Action("Delete")",
+                    data: { id: id },
+                    success: function(m) {
+                        //alert(m);
+                        dataTable.ajax.reload();
+                    }
+                });
+            } else {
+                //alert("You pressed Cancel!");
+            }
+        }    
+        function GetById(id) {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("GetById")",
+                data: { id: id },
+                success: function (result) {
+                    var form = $("form[data-actionName]");
+                    form.attr("data-actionName", "Edit");
+					                    form.find("[name=Name]").val(result.Name);
+						                    form.find("[name=Link]").val(result.Link);
+						                    
+                    form.find("[type=button]").attr("value", "ویرایش");
+                }
+            });
+        }
+    </script>
+}

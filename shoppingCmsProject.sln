@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{2BD7ECB9-970B-4A18-A26B-D6BFED889C16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{AE1A49CF-148E-409E-827E-FEA3BAD130CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{EB44E6E9-A73B-4B31-9909-3A838AFF32B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewModels", "ViewModels\ViewModels.csproj", "{BD4078EE-373C-4007-9BF9-79FAB17E5A65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domin", "Domin\Domin.csproj", "{2B346E35-4D2F-473F-83C9-C63468FF6F71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingWebSite", "ShoppingWebSite\ShoppingWebSite.csproj", "{04D425B6-5EBD-4A03-A218-02866412832E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2BD7ECB9-970B-4A18-A26B-D6BFED889C16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BD7ECB9-970B-4A18-A26B-D6BFED889C16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BD7ECB9-970B-4A18-A26B-D6BFED889C16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BD7ECB9-970B-4A18-A26B-D6BFED889C16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE1A49CF-148E-409E-827E-FEA3BAD130CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE1A49CF-148E-409E-827E-FEA3BAD130CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE1A49CF-148E-409E-827E-FEA3BAD130CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE1A49CF-148E-409E-827E-FEA3BAD130CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB44E6E9-A73B-4B31-9909-3A838AFF32B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB44E6E9-A73B-4B31-9909-3A838AFF32B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB44E6E9-A73B-4B31-9909-3A838AFF32B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB44E6E9-A73B-4B31-9909-3A838AFF32B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD4078EE-373C-4007-9BF9-79FAB17E5A65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD4078EE-373C-4007-9BF9-79FAB17E5A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD4078EE-373C-4007-9BF9-79FAB17E5A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD4078EE-373C-4007-9BF9-79FAB17E5A65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B346E35-4D2F-473F-83C9-C63468FF6F71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B346E35-4D2F-473F-83C9-C63468FF6F71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B346E35-4D2F-473F-83C9-C63468FF6F71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B346E35-4D2F-473F-83C9-C63468FF6F71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04D425B6-5EBD-4A03-A218-02866412832E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04D425B6-5EBD-4A03-A218-02866412832E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04D425B6-5EBD-4A03-A218-02866412832E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04D425B6-5EBD-4A03-A218-02866412832E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35
+	EndGlobalSection
+EndGlobal

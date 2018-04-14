@@ -1,0 +1,364 @@
+﻿<#@ template language="C#" HostSpecific="True" Debug="True" #>
+<#@ output extension="cs" #>
+<#@ assembly name="System.ComponentModel.DataAnnotations" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Data.Entity" #>
+<#@ assembly name="System.Data.Linq" #>
+<#@ assembly name="EnvDTE" #>
+<#@ ScaffoldingAssembly Processor="ScaffoldingAssemblyLoader" #>
+<#
+var routePrefix = String.Empty;
+
+if (!String.IsNullOrWhiteSpace(AreaName)) {
+    routePrefix = "/" + AreaName;
+}
+routePrefix += "/" + ControllerRootName + "/";
+#>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="Microsoft.AspNet.Scaffolding.Core.Metadata" #>
+<#@ parameter type="System.String" name="ControllerName" #>
+<#@ parameter type="System.String" name="ControllerRootName" #>
+<#@ parameter type="System.String" name="Namespace" #>
+<#@ parameter type="System.String" name="AreaName" #>
+<#@ parameter type="System.String" name="ContextTypeName" #>
+<#@ parameter type="System.String" name="ModelTypeName" #>
+<#@ parameter type="System.String" name="ModelVariable" #>
+<#@ parameter type="Microsoft.AspNet.Scaffolding.Core.Metadata.ModelMetadata" name="ModelMetadata" #>
+<#@ parameter type="System.Boolean" name="UseAsync" #>
+<#@ parameter type="System.Boolean" name="IsOverpostingProtectionRequired" #>
+<#@ parameter type="System.String" name="BindAttributeIncludeText" #>
+<#@ parameter type="System.String" name ="OverpostingWarningMessage" #>
+<#@ parameter type="System.Collections.Generic.HashSet<System.String>" name="RequiredNamespaces" #>
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using DataTablesParser;
+using Domin.Models;
+using ViewModels;
+using Services;
+
+
+<# if (UseAsync) { #>
+using System.Threading.Tasks;
+<# } #>
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+<# foreach (var namespaceName in RequiredNamespaces) { #>
+using <#= namespaceName #>;
+<# } #>
+
+namespace <#= Namespace #>
+{
+<#
+    var contextTypeName = ContextTypeName;
+    var entitySetName = ModelMetadata.EntitySetName;
+    var entitySetVariable = entitySetName.ToLowerInvariant();
+    var primaryKeyName = ModelMetadata.PrimaryKeys[0].PropertyName;
+    var primaryKeyShortTypeName = ModelMetadata.PrimaryKeys[0].ShortTypeName;
+    var primaryKeyDefaultValue = ModelMetadata.PrimaryKeys[0].DefaultValue;
+    var primaryKeyType = ModelMetadata.PrimaryKeys[0].TypeName;
+    var primaryKeyNullableTypeName = GetNullableTypeName(primaryKeyType, primaryKeyShortTypeName);
+    var lambdaVar = ModelVariable[0];
+    var relatedProperties = ModelMetadata.RelatedEntities.ToDictionary(item => item.AssociationPropertyName);
+
+    string bindAttribute;
+    if (IsOverpostingProtectionRequired)
+    {
+        bindAttribute = String.Format("[Bind(Include=\"{0}\")] ", BindAttributeIncludeText);
+    }
+    else
+    {
+        bindAttribute = String.Empty;
+    }
+#>
+    public class <#= ControllerName #> : BaseController
+    {
+		private readonly I<#=ModelTypeName#>Service _<#=ModelVariable#>Service;
+        
+		public <#= ControllerName #>(I<#=ModelTypeName#>Service <#=ModelVariable#>Service)
+        {
+            _<#=ModelVariable#>Service = <#=ModelVariable#>Service;
+        }
+        // GET: <#= routePrefix #>
+<# if (UseAsync) { #>
+        public async Task<ActionResult> Index()
+<# } else { #>
+        public ActionResult Index()
+<# } #>
+        {
+<#  var includeExpressions = "";
+        includeExpressions = String.Join("", relatedProperties.Values.Select(property => String.Format(".Include({0} => {0}.{1})", lambdaVar, property.AssociationPropertyName)));
+#>
+<# if(!String.IsNullOrEmpty(includeExpressions)) { #>
+            var <#= entitySetVariable #> = db.<#= entitySetName #><#= includeExpressions #>;
+<#		if (UseAsync) { #>
+            return View(await <#= entitySetVariable #>.ToListAsync());
+<#		} else { #>
+			var model = new <#=ModelTypeName#>();
+            return View(model);
+<#		} #>
+<# } else { #>
+<#		if (UseAsync) { #>
+            return View(await db.<#= entitySetName #><#= includeExpressions #>.ToListAsync());
+<#		} else { #>
+            var model = new <#=ModelTypeName#>();
+            return View(model);
+<#		} #>
+<# } #>
+        }
+		public JsonResult List()
+        {
+            var data = _<#=ModelVariable#>Service.GetForDataTable();
+            var parser = new DataTablesParser<<#=ModelTypeName#>DataTableModel>(Request, data);
+            var counter = 1;
+            var result = parser.Parse();
+            foreach (var item in result.data)
+            {
+                item.Row = counter++;
+            }
+            return Json(result);
+        }
+        // GET: <#= routePrefix #>Details/5
+<# if (UseAsync) { #>
+        public async Task<ActionResult> Details(<#= primaryKeyNullableTypeName #> id)
+<# } else { #>
+        public ActionResult GetById(int id)
+        {
+            var item = _<#=ModelVariable#>Service.GetById(id);
+<# } #>
+        
+<# if (UseAsync) { #>
+            <#= ModelTypeName #> <#= ModelVariable #> = await db.<#= entitySetName #>.FindAsync(id);
+<# } else { #>
+            var model = new <#=ModelTypeName#>JsonModel() {
+
+			<#foreach (PropertyMetadata property in ModelMetadata.Properties) {
+			if(!property.IsAssociation){
+			#>
+
+        <#= property.PropertyName #> = item.<#= property.PropertyName #>,
+    <#}}#>
+			 
+			 };
+<# } #>
+            
+                        return Json(model, JsonRequestBehavior.AllowGet);
+        }
+
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+<# if (UseAsync) { #>
+        public async Task<ActionResult> Create(<#= bindAttribute #><#= ModelTypeName #> <#= ModelVariable #>)
+<# } else { #>
+        public ActionResult Create(<#= ModelTypeName #> <#= ModelVariable #>)
+<# } #>
+        {
+            var result = false;
+            if (ModelState.IsValid)
+            {
+<# if(!String.IsNullOrEmpty(primaryKeyType) && String.Equals("System.Guid", primaryKeyType, StringComparison.OrdinalIgnoreCase)) { #>
+                <#= ModelVariable #>.<#= primaryKeyName #> = Guid.NewGuid();
+<# } #>
+                
+<# if (UseAsync) {#>
+                await db.SaveChangesAsync();
+<# } else { #>
+                result = _<#=ModelVariable#>Service.Create(<#= ModelVariable #>);
+<# } #>
+            }
+
+<# foreach (var property in relatedProperties.Values) { #>
+            ViewBag.<#= property.ForeignKeyPropertyNames[0] #> = new SelectList(db.<#= property.EntitySetName #>, "<#= property.PrimaryKeyNames[0] #>", "<#= property.DisplayPropertyName #>", <#= ModelVariable #>.<#= property.ForeignKeyPropertyNames[0] #>);
+<# } #>
+                                        return Json(new { result }, JsonRequestBehavior.AllowGet);
+        }
+
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+<# if (UseAsync) { #>
+        public async Task<ActionResult> Edit(<#= bindAttribute #><#= ModelTypeName #> <#= ModelVariable #>)
+<# } else { #>
+        public ActionResult Edit(<#= ModelTypeName #> <#= ModelVariable #>)
+<# } #>
+        {
+		var result = false;
+            if (ModelState.IsValid)
+            {
+                result = _<#=ModelVariable#>Service.Update(<#= ModelVariable #>);
+<# if (UseAsync) { #>
+                await db.SaveChangesAsync();
+<# } else { #>
+                
+<# } #>
+                
+            }
+<# foreach (var property in relatedProperties.Values) { #>
+            ViewBag.<#= property.ForeignKeyPropertyNames[0] #> = new SelectList(db.<#= property.EntitySetName #>, "<#= property.PrimaryKeyNames[0] #>", "<#= property.DisplayPropertyName #>", <#= ModelVariable #>.<#= property.ForeignKeyPropertyNames[0] #>);
+<# } #>
+            return Json(new { result }, JsonRequestBehavior.AllowGet);
+        }
+
+        
+
+        // POST: <#= routePrefix #>Delete/5
+        [HttpPost]
+        //[ValidateAntiForgeryToken]
+<# if (UseAsync) { #>
+        public async Task<ActionResult> DeleteConfirmed(<#= primaryKeyShortTypeName #> id)
+<# } else { #>
+        public ActionResult Delete(<#= primaryKeyShortTypeName #> id)
+<# } #>
+        {
+<# if (UseAsync) { #>
+            <#= ModelTypeName #> <#= ModelVariable #> = await db.<#= entitySetName #>.FindAsync(id);
+<# } else { #>
+            <#= ModelTypeName #> <#= ModelVariable #> =  _<#=ModelVariable#>Service.GetById(id);
+<# } #>
+            var result = _<#=ModelVariable#>Service.Delete(<#= ModelVariable #>);
+<# if (UseAsync) { #>
+            await db.SaveChangesAsync();
+<# } else { #>
+            
+<# } #>
+            return Json(new { result }, JsonRequestBehavior.AllowGet);
+        }
+
+    }
+}
+using Domin.Models;
+namespace ViewModels
+{
+    public class <#=ModelTypeName#>CrudModel
+    {
+        public <#=ModelTypeName#> <#=ModelTypeName#> { get; set; }
+    }
+    public class <#=ModelTypeName#>JsonModel
+    {
+<#foreach (PropertyMetadata property in ModelMetadata.Properties) {
+			if(!property.IsAssociation){
+			#>
+
+        public <#= property.ShortTypeName #> <#= property.PropertyName #> { get; set; }
+    <#}}#>
+	}
+    public class <#=ModelTypeName#>DataTableModel:<#=ModelTypeName#>JsonModel
+    {
+        public int Row { get; set; }
+    }
+}
+
+using System.Linq;
+using ViewModels;
+using Domin.Models;
+
+namespace Services
+{
+    public interface I<#=ModelTypeName#>Service : IBaseService<<#=ModelTypeName#>>
+    {
+        IQueryable<<#=ModelTypeName#>DataTableModel> GetForDataTable();
+    }
+}
+
+using System.Linq;
+using DAL;
+using ViewModels;
+using Domin.Models;
+
+namespace Services
+{
+    public class <#=ModelTypeName#>Service:BaseService<<#=ModelTypeName#>>, I<#=ModelTypeName#>Service
+    {
+        private readonly I<#=ModelTypeName#>Repository _repository;
+
+        public <#=ModelTypeName#>Service(I<#=ModelTypeName#>Repository repository)
+            : base(repository)
+        {
+            _repository = repository;
+        }
+        public IQueryable<<#=ModelTypeName#>DataTableModel> GetForDataTable()
+        {
+            return _repository.GetForDataTable();
+        }
+    }
+}
+
+using System.Linq;
+using Domin.Models;
+using Infrastructure;
+using ViewModels;
+
+namespace DAL
+{
+    public interface I<#=ModelTypeName#>Repository:IRepository<<#=ModelTypeName#>>
+    {
+        IQueryable<<#=ModelTypeName#>DataTableModel> GetForDataTable();
+    }
+}
+
+using System.Linq;
+using Domin.Models;
+using Infrastructure;
+using ViewModels;
+
+namespace DAL
+{
+    public class <#=ModelTypeName#>Repository : Repository<<#=ModelTypeName#>>, I<#=ModelTypeName#>Repository  
+    {
+      
+        public <#=ModelTypeName#>Repository(testEntities context)
+        {
+           
+        }
+
+        public IQueryable<<#=ModelTypeName#>DataTableModel> GetForDataTable()
+        {
+            return unitofwork.context.<#=ModelTypeName#>.Select(x=>new <#=ModelTypeName#>DataTableModel()
+            {
+                <#foreach (PropertyMetadata property in ModelMetadata.Properties) {
+			if(!property.IsAssociation){
+			#>
+
+        <#= property.PropertyName #> = x.<#= property.PropertyName #>,
+    <#}}#>
+                Row = 0
+            });
+        }
+    }
+}
+
+
+
+
+<#+
+// This function converts the primary key short type name to its nullable equivalent when possible. This is required to make
+// sure that an HTTP 400 error is thrown when the user tries to access the edit, delete, or details action with null values.
+    string GetNullableTypeName(string typeName, string shortTypeName)
+    {
+        // The exceptions are caught because if for any reason the type is user defined, then the short type name will be used.
+        // In that case the user will receive a server error if null is passed to the edit, delete, or details actions.
+        Type primaryKeyType = null;
+        try
+        {
+            primaryKeyType = Type.GetType(typeName);
+        }
+        catch
+        {
+        }
+        if (primaryKeyType != null && (primaryKeyType.IsPrimitive || IsGuid(typeName)))
+        {
+            return shortTypeName + "?";
+        }
+        return shortTypeName;
+    }
+
+    bool IsGuid(string typeName) {
+        return String.Equals("System.Guid", typeName, StringComparison.OrdinalIgnoreCase);
+    }
+#>
